@@ -5,12 +5,18 @@
   "main": "src/index.ts",
   "dependencies": {},
   "devDependencies": {
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.15",
+    "jest": "^24.8.0",
     "rollup-plugin-typescript2": "^0.22.0",
     "typescript": "^3.5.3"
   },
   "scripts": {
     "build": "rollup --config",
-    "dev": "rollup --config --watch.include src/**"
+    "dev": "rollup --config --watch.include src/**",
+    "test:dev": "jest --watch",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
