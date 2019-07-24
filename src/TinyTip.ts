@@ -3,6 +3,7 @@ import { DEFAULT_OPTIONS } from './property/defaultOpt';
 import { ITinyTipState } from './interface/ITinyTipState';
 import { ITinyTipOpt } from './interface/ITinyTipOpt';
 import { taskQueue } from './property/taskQueue';
+import { runTasks } from './task/runTasks';
 
 
 export class TinyTip {
@@ -14,12 +15,12 @@ export class TinyTip {
 
     /**
      * 
-     * @param {Element} target 添加tip的元素 
-     * @param {Element} popover 弹出层模板
+     * @param {HTMLElement} target 添加tip的元素 
+     * @param {HTMLElement} popover 弹出层模板
      */
-    constructor(target: Element, popper: Element, options: ITinyTipOpt = {}) {
+    constructor(target: HTMLElement, popperNode: HTMLElement, options: ITinyTipOpt = {}) {
         this.trigger = target;
-        this.popper = popper;
+        this.popper = popperNode;
         // Merge default options and custom options
         this.options = { ...DEFAULT_OPTIONS, ...options };
         
@@ -42,14 +43,16 @@ export class TinyTip {
         this._show();
     }
 
-    private _show() {
-
-    }
+    private _show() {}
 
     private _update() {
         let data = {
             instance: this
         };
+
+        // execution component tasks
+        runTasks(this.taskQueue);
+
         if (!this.state.isCreated) {
             this.state.isCreated = true;
             this.options.onCreate && this.options.onCreate(data);
