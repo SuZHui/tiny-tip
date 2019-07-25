@@ -1,7 +1,14 @@
+import { ITinyTipEvent } from "@/interface/ITinyTipEvent";
+import { ITask } from "@/interface/ITask";
+
 /**
  * Execution queue
- * @param {Function[]} tasks 
+ * @param {ITask[]} tasks
+ * @param {ITinyTipEvent} data
  */
-export function runTasks(tasks: Function[]) {
-    tasks.forEach(task => task());
+export function runTasks(tasks: ITask[], data: ITinyTipEvent): ITinyTipEvent {
+    tasks.forEach(task => {
+        data = task(data);
+    });
+    return data;
 }

@@ -8,5 +8,5 @@ export enum StyleName {
     left = 'left' 
 };
 export type IStyle = {
-    [key in StyleName]?: string | number;
+    [key in keyof CSSStyleDeclaration]?: string | number;
 };

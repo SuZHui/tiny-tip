@@ -1,11 +1,13 @@
-import { IStyle, StyleName } from "@/interface/IStyle";
+import { IStyle } from "@/interface/IStyle";
 
 export function setStyles(element: HTMLElement, styles: IStyle): void {
     Object.keys(styles).forEach((key: string) => {
         let unit = '';
-        if (styles[<StyleName>key] === 'number') {
+        if (
+            ['width', 'height', 'top', 'right', 'bottom', 'left'].indexOf(key) !== -1
+            && styles[<keyof CSSStyleDeclaration>key] === 'number') {
             unit = 'px';
         }
-        element.style[<StyleName>key] = `${styles[<StyleName>key]}${unit}`;
+        (element.style[<keyof CSSStyleDeclaration>key] as string) = `${styles[<keyof CSSStyleDeclaration>key]}${unit}`;
     });
 }

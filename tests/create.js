@@ -1,12 +1,21 @@
-const hover = document.getElementById('hover');
-const popper = document.getElementById('popper');
+document.addEventListener('DOMContentLoaded', function() {
+    const hover = document.getElementById('hover');
+    const popper = document.getElementById('popper');
+    
+    let tinyTip;
 
-const tinyTip = new Tinytip(hover, {
-    title: 'Hi, I\'m Popper'
+    hover.addEventListener('mouseover', function() {
+        // tinyTip && tinyTip.destroy();
+        if (!tinyTip) {
+            tinyTip = new Tinytip(hover, popper, {
+                title: 'Hi, I\'m Popper',
+                placement: 'right'
+            });
+        }
+
+    });
+
+    // hover.addEventListener('mouseout', function() {
+    //     tinyTip && tinyTip.destroy();
+    // });
 });
-
-
-const range = document.createRange()
-range.setStart(hover, 0);
-range.setEnd(popper, 0);
-console.log(range)

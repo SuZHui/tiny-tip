@@ -5,16 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>tinytip.js - Tests</title>
+    <style>
+        .container {
+            background: #eee;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #hover {
+            /* width: 160px; */
+        }
+        #popper {
+            background: orange;
+            width: 160px;
+        }
+    </style>
 </head>
 <body>
-    <div>
+    <div class="container">
         <button
             id="hover"
             >hover me
         </button>
-        <div id="popper" class="popper">
-            This is a popper
-        </div>
+    </div>
+    <div id="popper" class="popper">
+        This is a popper
     </div>
 
     <script src="../dist/tinytip.js"></script>
