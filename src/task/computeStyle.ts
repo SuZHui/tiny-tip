@@ -2,12 +2,17 @@ import { ITinyTipEvent } from "@/interface/ITinyTipEvent";
 import { getSupportedPropertyName } from "@/util/getSupportedPropertyName";
 import { IStyle } from "@/interface/IStyle";
 import { getBoundingClientRect } from "@/util/getBoundingClientRect";
+import { getOffsetParent } from "@/util/getOffsetParent";
 
 export function computeStyle(data: ITinyTipEvent) {
+    const offsetParent = getOffsetParent(data.instance.popper);
+    const offsetParentRect = offsetParent.getBoundingClientRect();
+    
+
     // TODO: is use gpuAcceleration?
     const styles: IStyle = {
         // TODO: this property will set in option
-        position: 'absolute'
+        position: data.offsets.popper!.position
     };
     const { placement } = data;
     // get target bounding client rect
@@ -17,26 +22,20 @@ export function computeStyle(data: ITinyTipEvent) {
     const prefixedProperty = getSupportedPropertyName('transform');
 
     let left, top;
-    // offset of popper to trigger
-    const popperToTriggerRect = {
-        top: targetRect.top - popperRect.top,
-        left: targetRect.left - popperRect.left,
-    }
-
     if (placement === 'top') {
-        top = popperToTriggerRect.top - popperRect.height;
+        top = targetRect.top - popperRect.height;
     } else if (placement === 'bottom') {
-        top = popperToTriggerRect.top + popperRect.height;
+        top = targetRect.top + popperRect.height;
     } else {
-        top = popperToTriggerRect.top
+        top = targetRect.top
     }
 
     if (placement === 'left') {
-        left = popperToTriggerRect.left - popperRect.width;
+        left = targetRect.left - popperRect.width;
     } else if (placement === 'right') {
-        left = popperToTriggerRect.left + popperRect.width;
+        left = targetRect.left + popperRect.width;
     } else {
-        left = popperToTriggerRect.left;
+        left = targetRect.left;
     }
 
     if (prefixedProperty) {
@@ -54,6 +53,6 @@ export function computeStyle(data: ITinyTipEvent) {
     
     // update style of data
     data.styles = { ...styles, ...data.styles };
-
+    debugger
     return data;
 }

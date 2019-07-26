@@ -1,3 +1,5 @@
+import { getBoundingClientRect } from '@/util/getBoundingClientRect';
+import { setStyles } from '@/util/setStyles';
 import { ITaskQueue } from './interface/ITask';
 import { DEFAULT_OPTIONS } from './property/defaultOpt';
 import { ITinyTipState } from './interface/ITinyTipState';
@@ -22,14 +24,9 @@ export class TinyTip {
      */
     constructor(target: HTMLElement, popperNode: HTMLElement, options: ITinyTipOpt = DEFAULT_OPTIONS) {
         this.trigger = target;
+        this.popper = popperNode;
 
-        if (this.trigger.parentNode!.contains(popperNode)) {
-            this.popper = popperNode;
-        } else {
-            const popper = popperNode.cloneNode(true);
-            this.trigger.parentNode!.appendChild(popper);
-            this.popper = <HTMLElement>popper;
-        }
+        this._init();
 
         
         // Merge default options and custom options
@@ -47,6 +44,29 @@ export class TinyTip {
         this._update();
     }
 
+    /**
+     * Initialize the dom structure
+     */
+    private _init() {
+        setStyles(this.popper, { position: 'absolute' });
+
+        if (this.trigger.nodeName === 'BODY') {
+            // If trigger is the body element, popper is inserted
+            this.trigger.appendChild(this.popper);
+            return
+        }
+        const parentNode = this.trigger.parentNode!;
+        if (parentNode === this.popper.parentNode) {
+            // TODO: popper and trigger is sibling elements
+        } else {
+            parentNode.append(this.popper);
+        }
+
+        // TODO: get offsetParent of popper
+        
+
+    }
+
     private _update() {
         let data: ITinyTipEvent = {
             instance: this,
@@ -57,6 +77,8 @@ export class TinyTip {
             placement: this.options.placement!,
             styles: {},
         };
+
+        // TODO: get offset of trigger [2019.07.26]
 
         // execution component tasks and return the result data
         data = runTasks(this.taskQueue, data);

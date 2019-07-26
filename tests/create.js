@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!tinyTip) {
             tinyTip = new Tinytip(hover, popper, {
                 title: 'Hi, I\'m Popper',
-                placement: 'right'
+                placement: 'top'
             });
         }
 

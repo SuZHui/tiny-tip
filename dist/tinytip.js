@@ -27,6 +27,17 @@ var Tinytip = (function () {
         return __assign.apply(this, arguments);
     };
 
+    function setStyles(element, styles) {
+        Object.keys(styles).forEach(function (key) {
+            var unit = '';
+            if (['width', 'height', 'top', 'right', 'bottom', 'left'].indexOf(key) !== -1
+                && styles[key] === 'number') {
+                unit = 'px';
+            }
+            element.style[key] = "" + styles[key] + unit;
+        });
+    }
+
     /**
      * Default options provided to TinyTip.js constructor
      */
@@ -48,24 +59,12 @@ var Tinytip = (function () {
         return data;
     }
 
-    function setStyles(element, styles) {
-        Object.keys(styles).forEach(function (key) {
-            var unit = '';
-            if (['width', 'height', 'top', 'right', 'bottom', 'left'].indexOf(key) !== -1
-                && styles[key] === 'number') {
-                unit = 'px';
-            }
-            element.style[key] = "" + styles[key] + unit;
-        });
-    }
-
     /**
      * Apply style to popper
      * @param {ITinyTipEvent} data
      */
     function applyStyle(data) {
         // Futures: Location types fixed and absolut need to be added
-        setStyles(data.instance.popper, { position: 'absolute' });
         setStyles(data.instance.popper, data.styles);
         return data;
     }
@@ -75,8 +74,8 @@ var Tinytip = (function () {
         var upperProp = "" + property.charAt(0).toUpperCase() + property.slice(1);
         for (var i = 0; i < prefixes.length; i++) {
             var prefix = prefixes[i];
-            var toCheck = prefix ? "" + prefix + upperProp : property;
-            if (document.body.style.hasOwnProperty(toCheck)) {
+            var toCheck = prefix ? "" + prefix + upperProp : upperProp;
+            if (document.body.style[toCheck] !== undefined) {
                 return toCheck;
             }
         }
@@ -93,16 +92,40 @@ var Tinytip = (function () {
         return {
             left: rect.left,
             top: rect.top,
-            width: rect.width,
-            height: rect.height
+            width: rect.right - rect.left,
+            height: rect.bottom - rect.top
         };
     }
 
+    /**
+     * Gets the parent element of a given element
+     * @param {HTMLElement|null} element
+     * @returns {HTMLElement}
+     */
+    function getOffsetParent(element) {
+        if (!element) {
+            return document.documentElement;
+        }
+        var noOffsetParent = null;
+        var offsetParent = element.offsetParent || null;
+        while (offsetParent === noOffsetParent && element.nextElementSibling) {
+            element = element.nextElementSibling;
+            offsetParent = element.offsetParent;
+        }
+        var nodeName = offsetParent && offsetParent.nodeName;
+        if (!nodeName || nodeName === 'BODY' || nodeName === 'HTML') {
+            return element ? element.ownerDocument.documentElement : document.documentElement;
+        }
+        return offsetParent;
+    }
+
     function computeStyle(data) {
+        var offsetParent = getOffsetParent(data.instance.popper);
+        var offsetParentRect = offsetParent.getBoundingClientRect();
         // TODO: is use gpuAcceleration?
         var styles = {
             // TODO: this property will set in option
-            position: 'absolute'
+            position: data.offsets.popper.position
         };
         var placement = data.placement;
         // get target bounding client rect
@@ -110,28 +133,23 @@ var Tinytip = (function () {
         var popperRect = getBoundingClientRect(data.instance.popper);
         var prefixedProperty = getSupportedPropertyName('transform');
         var left, top;
-        // offset of popper to trigger
-        var popperToTriggerRect = {
-            top: targetRect.top - popperRect.top,
-            left: targetRect.left - popperRect.left,
-        };
         if (placement === 'top') {
-            top = popperToTriggerRect.top - popperRect.height;
+            top = targetRect.top - popperRect.height;
         }
         else if (placement === 'bottom') {
-            top = popperToTriggerRect.top + popperRect.height;
+            top = targetRect.top + popperRect.height;
         }
         else {
-            top = popperToTriggerRect.top;
+            top = targetRect.top;
         }
         if (placement === 'left') {
-            left = popperToTriggerRect.left - popperRect.width;
+            left = targetRect.left - popperRect.width;
         }
         else if (placement === 'right') {
-            left = popperToTriggerRect.left + popperRect.width;
+            left = targetRect.left + popperRect.width;
         }
         else {
-            left = popperToTriggerRect.left;
+            left = targetRect.left;
         }
         if (prefixedProperty) {
             // TODO: If the value is odd, translate3d's display will be blurred
@@ -143,11 +161,13 @@ var Tinytip = (function () {
         }
         // update style of data
         data.styles = __assign({}, styles, data.styles);
+        debugger;
         return data;
     }
 
     function offset(data) {
         var placement = data.placement, _a = data.offsets, popper = _a.popper, trigger = _a.trigger;
+        // TODO: Calculate offsets of popper and trigger
         return data;
     }
 
@@ -166,14 +186,8 @@ var Tinytip = (function () {
         function TinyTip(target, popperNode, options) {
             if (options === void 0) { options = DEFAULT_OPTIONS; }
             this.trigger = target;
-            if (this.trigger.parentNode.contains(popperNode)) {
-                this.popper = popperNode;
-            }
-            else {
-                var popper = popperNode.cloneNode(true);
-                this.trigger.parentNode.appendChild(popper);
-                this.popper = popper;
-            }
+            this.popper = popperNode;
+            this._init();
             // Merge default options and custom options
             this.options = __assign({}, DEFAULT_OPTIONS, options);
             // init component state
@@ -185,6 +199,23 @@ var Tinytip = (function () {
             this.taskQueue = tasks;
             this._update();
         }
+        /**
+         * Initialize the dom structure
+         */
+        TinyTip.prototype._init = function () {
+            setStyles(this.popper, { position: 'absolute' });
+            if (this.trigger.nodeName === 'BODY') {
+                // If trigger is the body element, popper is inserted
+                this.trigger.appendChild(this.popper);
+                return;
+            }
+            var parentNode = this.trigger.parentNode;
+            if (parentNode === this.popper.parentNode) ;
+            else {
+                parentNode.append(this.popper);
+            }
+            // TODO: get offsetParent of popper
+        };
         TinyTip.prototype._update = function () {
             var data = {
                 instance: this,
@@ -195,6 +226,7 @@ var Tinytip = (function () {
                 placement: this.options.placement,
                 styles: {},
             };
+            // TODO: get offset of trigger [2019.07.26]
             // execution component tasks and return the result data
             data = runTasks(this.taskQueue, data);
             // trigger life cycle events

@@ -11,7 +11,7 @@ export function getBoundingClientRect(element: HTMLElement)
     return {
         left: rect.left,
         top: rect.top,
-        width: rect.width,
-        height: rect.height
+        width: rect.right - rect.left,
+        height: rect.bottom - rect.top
     }
 }

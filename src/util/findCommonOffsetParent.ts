@@ -8,7 +8,10 @@ import { getOffsetParent } from "./getOffsetParent";
  * @param {Element} element2
  * @returns {Element} common offset parent
  */
-export function findCommonOffsetParent(element1: HTMLElement, element2: HTMLElement) {
+export function findCommonOffsetParent(element1: HTMLElement, element2: HTMLElement): HTMLElement {
+    if (!element1 || !element1.nodeType || !element2 || !element2.nodeType) {
+        return document.documentElement;
+    }
     // Calculates the position of given elements
     const order = 
         element1.compareDocumentPosition(element2)
@@ -24,12 +27,12 @@ export function findCommonOffsetParent(element1: HTMLElement, element2: HTMLElem
 
     if ((element1 !== commonAncestorContainer && element2 !== commonAncestorContainer)
         || start.contains(end)) {
-        if (isOffsetContainer((commonAncestorContainer as HTMLElement))) {
-            return commonAncestorContainer;
+        if (isOffsetContainer(<HTMLElement>commonAncestorContainer)) {
+            return <HTMLElement>commonAncestorContainer;
         }
-        return getOffsetParent((commonAncestorContainer as HTMLElement));
+        return getOffsetParent(<HTMLElement>commonAncestorContainer);
     }
 
     // TODO: if element is shadowDOM , todo it
-    // return null;
+   return <HTMLElement>commonAncestorContainer;
 }

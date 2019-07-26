@@ -1,18 +1,19 @@
 /**
  * Gets the parent element of a given element
- * @param {Element|null} element
- * @returns {Element|null}
+ * @param {HTMLElement|null} element
+ * @returns {HTMLElement}
  */
-export function getOffsetParent(element: Element | null = null): Element | null {
+export function getOffsetParent(element: HTMLElement): HTMLElement {
     if (!element) {
         return document.documentElement;
     }
 
     const noOffsetParent = null;
-    let offsetParent = (element as HTMLElement).offsetParent || (element as HTMLElement).parentElement || null;
+
+    let offsetParent = element.offsetParent || null;
     while (offsetParent === noOffsetParent && element.nextElementSibling) {
-        element = (element.nextElementSibling as HTMLElement);
-        offsetParent = (element as HTMLElement).offsetParent;
+        element = <HTMLElement>element!.nextElementSibling;
+        offsetParent = element.offsetParent;
     }
 
     const nodeName = offsetParent && offsetParent.nodeName;
@@ -21,5 +22,5 @@ export function getOffsetParent(element: Element | null = null): Element | null 
         return element ? element.ownerDocument!.documentElement : document.documentElement;
     }
 
-    return offsetParent;
+    return <HTMLElement>offsetParent;
 }
