@@ -7,12 +7,24 @@ document.addEventListener('DOMContentLoaded', function() {
     hover.addEventListener('mouseover', function() {
         // tinyTip && tinyTip.destroy();
         if (!tinyTip) {
-            tinyTip = new Tinytip(hover, popper, {
-                title: 'Hi, I\'m Popper',
-                placement: 'top'
-            });
+            const constructor = window.Tinytip
+            // tinyTip = new constructor(hover, popper, {
+            //     title: 'Hi, I\'m Popper',
+            //     placement: 'top',
+            //     onCreate(e) {
+            //         console.log(e);
+            //     }
+            // });
+            tinyTip = new constructor(hover, popper);
         }
 
+    });
+
+    hover.addEventListener('mouseleave', function() {
+        if (tinyTip) {
+            tinyTip.destroy();
+            tinyTip = null;
+        }
     });
 
     // hover.addEventListener('mouseout', function() {

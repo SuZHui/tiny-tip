@@ -1,7 +1,5 @@
-export interface IOffset {
-    position: 'absolute' | 'fixed';
-    top: number;
-    left: number;
-    width: number;
-    height: number;
+import { IClientRect } from "./IClientRect";
+
+export interface IOffset extends IClientRect {
+    position?: 'absolute' | 'fixed';
 }

@@ -1,58 +1,37 @@
-import { ITinyTipEvent } from "@/interface/ITinyTipEvent";
-import { getSupportedPropertyName } from "@/util/getSupportedPropertyName";
-import { IStyle } from "@/interface/IStyle";
-import { getBoundingClientRect } from "@/util/getBoundingClientRect";
-import { getOffsetParent } from "@/util/getOffsetParent";
+import { getSupportedPropertyName } from '@/util/getSupportedPropertyName';
+import { getBoundingClientRect } from '@/util/getBoundingClientRect';
+import { getOffsetParent } from '@/util/getOffsetParent';
+import { ICatapultData } from "@/types/ICataoultData";
+import { IStyle } from '@/interface/IStyle';
+import { IOffset } from '@/interface/IOffset';
 
-export function computeStyle(data: ITinyTipEvent) {
+export function computeStyle(data: ICatapultData) {
+    const { popper } = data.offsets;
     const offsetParent = getOffsetParent(data.instance.popper);
-    const offsetParentRect = offsetParent.getBoundingClientRect();
-    
-
-    // TODO: is use gpuAcceleration?
-    const styles: IStyle = {
-        // TODO: this property will set in option
-        position: data.offsets.popper!.position
-    };
-    const { placement } = data;
-    // get target bounding client rect
-    const targetRect = getBoundingClientRect(data.instance.trigger);
-    const popperRect = getBoundingClientRect(data.instance.popper);
+    const offsetParentRect = getBoundingClientRect(offsetParent);
 
     const prefixedProperty = getSupportedPropertyName('transform');
 
-    let left, top;
-    if (placement === 'top') {
-        top = targetRect.top - popperRect.height;
-    } else if (placement === 'bottom') {
-        top = targetRect.top + popperRect.height;
-    } else {
-        top = targetRect.top
-    }
+    const offsets: IOffset = {
+        width: popper.width,
+        height: popper.height,
+        left: popper.left,
+        right: popper.right,
+        top: popper.top,
+        bottom: popper.bottom,
+    };
 
-    if (placement === 'left') {
-        left = targetRect.left - popperRect.width;
-    } else if (placement === 'right') {
-        left = targetRect.left + popperRect.width;
-    } else {
-        left = targetRect.left;
-    }
+    const styles: IStyle = {
+        position: data.instance.data.position,
+    };
 
-    if (prefixedProperty) {
-        // TODO: If the value is odd, translate3d's display will be blurred
-        // setting the value to even solves this problem
-        styles[<any>prefixedProperty] = `translate3d(${left}px, ${top}px, 0)`;
-        styles.left = 0;
-        styles.top = 0;
-        styles.willChange = 'transform';
-    } else {
-        // TODO: If the browser does not support the transform property
-        // use 'style.position' instead of
 
-    }
-    
-    // update style of data
+    styles[<any>prefixedProperty] = `translate3d(${offsets.left}px, ${offsets.top}px, 0)`;
+    styles.left = 0;
+    styles.top = 0;
+    styles.willChange = 'transform';
+
     data.styles = { ...styles, ...data.styles };
-    debugger
+
     return data;
 }

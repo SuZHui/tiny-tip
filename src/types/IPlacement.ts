@@ -1,0 +1,1 @@
+export type IPlacement = 'top' | 'bottom' | 'left' | 'right';

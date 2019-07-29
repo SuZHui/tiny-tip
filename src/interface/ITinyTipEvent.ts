@@ -1,7 +1,7 @@
-import { TinyTip } from './../TinyTip';
+
 import { IOffset } from './IOffset';
 export interface ITinyTipEvent {
-    instance: TinyTip;
+    instance: any;
     placement: string;
     offsets: {
         popper: IOffset | null,

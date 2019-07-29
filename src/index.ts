@@ -1,2 +1,2 @@
-import { TinyTip }  from "./TinyTip";
-export default TinyTip;
+import { Catapult } from './Catapult';
+export default Catapult ;

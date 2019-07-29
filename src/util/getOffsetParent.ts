@@ -1,5 +1,6 @@
 /**
  * Gets the parent element of a given element
+ * 返回html元素
  * @param {HTMLElement|null} element
  * @returns {HTMLElement}
  */
