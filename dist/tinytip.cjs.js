@@ -53,21 +53,6 @@ function getSupportedPropertyName(property) {
     return null;
 }
 
-/**
- * Get the size of the element and its position relative to the viewport
- * @param {HTMLElement} element dom node
- * @returns {object}
- */
-function getBoundingClientRect(element) {
-    var rect = element.getBoundingClientRect();
-    return {
-        left: rect.left,
-        top: rect.top,
-        width: rect.right - rect.left,
-        height: rect.bottom - rect.top
-    };
-}
-
 function setStyles(element, styles) {
     Object.keys(styles).forEach(function (key) {
         var unit = '';
@@ -115,6 +100,21 @@ var ILifecycle = /** @class */ (function () {
     }
     return ILifecycle;
 }());
+
+/**
+ * Get the size of the element and its position relative to the viewport
+ * @param {HTMLElement} element dom node
+ * @returns {object}
+ */
+function getBoundingClientRect(element) {
+    var rect = element.getBoundingClientRect();
+    return {
+        left: rect.left,
+        top: rect.top,
+        width: rect.right - rect.left,
+        height: rect.bottom - rect.top
+    };
+}
 
 function getStyleComputedProperty(element, property) {
     if (property === void 0) { property = null; }
@@ -196,17 +196,67 @@ var tasks = [
 ];
 
 /**
+ *
+ * @param {HTMLElement} popper 弹出元素
+ * @param {HTMLElement} referenceOffset reference元素位置信息
+ * @param {IPlacement} placement 弹出元素相对于reference的位置
+ */
+function getPopperOffsets(popper, referenceOffset, placement) {
+    var popperRect = getBoundingClientRect(popper);
+    var popperOffset = {
+        width: popperRect.width,
+        height: popperRect.height,
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+    };
+    // main side 为 offset 中的left 或 top,用以对应popper将要位移的方向
+    // secondary side 为 主轴之外的另一轴， 与主轴对应
+    // 如果popper出现在横轴（placement = left | right）
+    // 则main side 为top 
+    // 如果popper出现在纵轴(placement = top | bottom)
+    // 则main side 为 left
+    var isHoriz = ['right', 'left'].indexOf(placement) !== -1;
+    var mainSide = isHoriz ? 'top' : 'left';
+    var secondarySide = isHoriz ? 'left' : 'top';
+    var measurement = isHoriz ? 'height' : 'width';
+    var secondaryMeasurement = isHoriz ? 'width' : 'height';
+    // 相对于main side 居中
+    popperOffset[mainSide] =
+        referenceOffset[mainSide] +
+            referenceOffset[measurement] / 2 -
+            popperRect[measurement] / 2;
+    if (placement === secondarySide) {
+        // 如果 placement 与 secondary相等
+        // 说明 popper相对reference的位置与 secondary side相等
+        // 则popper的【secondary side】对应属性相等
+        // offset[ss] = ref[ss] - pp[width|height]
+        popperOffset[secondarySide] =
+            referenceOffset[secondarySide] - popperRect[secondaryMeasurement];
+    }
+    else {
+        // 反之则为
+        // offset[ss] = ref[ss] + pp[width|height]
+        popperOffset[secondarySide] =
+            referenceOffset[secondarySide] + referenceOffset[secondaryMeasurement];
+    }
+    return popperOffset;
+}
+
+/**
  * 弹射器
  * 用于将给定的html内容显示到给定引用的四周
  */
 var Catapult = /** @class */ (function (_super) {
     __extends(Catapult, _super);
-    function Catapult(reference, popper) {
+    function Catapult(reference, popper, options) {
         var _this = _super.call(this) || this;
         _this._options = DEFAULT_CONFIG;
         _this.data = {};
         _this.reference = reference;
         _this.popper = popper;
+        _this._options = __assign({}, _this._options, options);
         // init task queue
         _this.taskQueue = tasks;
         _this._initialize();
@@ -229,6 +279,11 @@ var Catapult = /** @class */ (function (_super) {
         // 判断两者的offsetParent是否一致
         // 如果不一致 则统一取最外层元素
         // const order = this.reference.compareDocumentPosition(this.popper) & Node.DOCUMENT_POSITION_FOLLOWING;
+        // 如果popper节点与reference不在同一个文档对象中
+        // 则将popper追加至 与reference同级
+        if (document.documentElement.compareDocumentPosition(this.popper) & Node.DOCUMENT_POSITION_DISCONNECTED) {
+            this.reference.parentElement.append(this.popper);
+        }
     };
     Catapult.prototype._update = function () {
         // reference元素位置信息
@@ -237,7 +292,7 @@ var Catapult = /** @class */ (function (_super) {
             instance: this,
             offsets: {
                 reference: referenceOffset,
-                popper: this._getPopperOffsets(this.popper, referenceOffset, this._options.placement),
+                popper: getPopperOffsets(this.popper, referenceOffset, this._options.placement),
             },
             placement: this._options.placement,
             styles: {},
@@ -253,37 +308,6 @@ var Catapult = /** @class */ (function (_super) {
             this.update();
             this._options.onUpdate && this._options.onUpdate(data);
         }
-    };
-    /**
-     *
-     * @param {HTMLElement} popper 弹出元素
-     * @param {HTMLElement} referenceOffset reference元素位置信息
-     * @param {IPlacement} placement 弹出元素相对于reference的位置
-     */
-    Catapult.prototype._getPopperOffsets = function (popper, referenceOffset, placement) {
-        var popperRect = getBoundingClientRect(popper);
-        var popperOffset = {
-            width: popperRect.width,
-            height: popperRect.height,
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-        };
-        var isHoriz = ['right', 'left'].indexOf(placement) !== -1;
-        var mainSide = isHoriz ? 'top' : 'left';
-        var secondarySide = isHoriz ? 'left' : 'top';
-        var measurement = isHoriz ? 'height' : 'width';
-        var secondaryMeasurement = isHoriz ? 'width' : 'height';
-        popperOffset[mainSide] =
-            referenceOffset[mainSide] +
-                referenceOffset[measurement] / 2 -
-                popperRect[measurement] / 2;
-        if (placement === secondarySide) {
-            popperOffset[secondarySide] =
-                referenceOffset[secondarySide] - popperRect[secondaryMeasurement];
-        }
-        return popperOffset;
     };
     // === implement ILifecycle ===
     Catapult.prototype.create = function () {
@@ -307,6 +331,8 @@ var Catapult = /** @class */ (function (_super) {
             _a[getSupportedPropertyName('transform')] = '',
             _a));
         // TODO: disabled event listeners
+        // remove the popper from dom
+        this.popper.parentNode.removeChild(this.popper);
         return this;
     };
     return Catapult;
