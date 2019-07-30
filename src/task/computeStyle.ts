@@ -2,8 +2,8 @@ import { getSupportedPropertyName } from '@/util/getSupportedPropertyName';
 import { getBoundingClientRect } from '@/util/getBoundingClientRect';
 import { getOffsetParent } from '@/util/getOffsetParent';
 import { ICatapultData } from "@/types/ICataoultData";
-import { IStyle } from '@/interface/IStyle';
-import { IOffset } from '@/interface/IOffset';
+import { IRect } from '@/types/IRect';
+import { IStyle } from '@/types/IStyle';
 
 export function computeStyle(data: ICatapultData) {
     const { popper } = data.offsets;
@@ -12,7 +12,7 @@ export function computeStyle(data: ICatapultData) {
 
     const prefixedProperty = getSupportedPropertyName('transform');
 
-    const offsets: IOffset = {
+    const offsets: IRect = {
         width: popper.width,
         height: popper.height,
         left: popper.left,

@@ -1,37 +1,38 @@
 import { getSupportedPropertyName } from '@/util/getSupportedPropertyName';
-import { getBoundingClientRect } from '@/util/getBoundingClientRect';
 import { setStyles } from '@/util/setStyles';
 import { getOffsetParent } from '@/util/getOffsetParent';
 import { DEFAULT_CONFIG } from "./config/defaultConfig";
-import { ILifecycle } from "./types/ILifecycle";
-import { IRect } from './types/IRect';
 import { getOffsetRectFromCtoP } from './util/getOffsetRectFromCtoP';
-import { IPlacement } from './types/IPlacement';
 import { runTasks } from './task/runTasks';
 import tasks from '@/task/index';
-import { ITaskQueue } from './interface/ITask';
 import { ICatapultData } from './types/ICataoultData';
 import { ICatapultConfig } from './types/ICatapultConfig';
 import { getPopperOffsets } from './util/getPopperOffsets';
+import { ITaskQueue } from './types/ITask';
 
 /**
  * 弹射器
  * 用于将给定的html内容显示到给定引用的四周
  */
-export class Catapult extends ILifecycle {
+export class Catapult {
     private _options = DEFAULT_CONFIG;
     
     reference: HTMLElement;
     popper: HTMLElement;
     taskQueue: ITaskQueue;
     data: any = {};
+    state: { isCreated: boolean; isDestroyed: boolean; };
     
 
     constructor(reference: HTMLElement, popper: HTMLElement, options: ICatapultConfig) {
-        super();
         this.reference = reference;
         this.popper = popper;
         this._options = { ...this._options, ...options };
+
+        this.state = {
+            isCreated: false,
+            isDestroyed: false
+        }
 
         // init task queue
         this.taskQueue = tasks;
@@ -85,22 +86,11 @@ export class Catapult extends ILifecycle {
 
         // trigger life cycle events
         if (!this.state.isCreated) {
-            this.create();
+            this.state.isCreated = true;
             this._options.onCreate && this._options.onCreate(data);
         } else {
-            this.update();
             this._options.onUpdate && this._options.onUpdate(data);
         }
-    }
-
-    // === implement ILifecycle ===
-    create() {
-        this.state.isCreated = true;
-        return this;
-    }
-
-    update() {
-        return this;
     }
 
     destroy() {

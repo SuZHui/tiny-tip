@@ -14,20 +14,6 @@ MERCHANTABLITY OR NON-INFRINGEMENT.
 See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
-/* global Reflect, Promise */
-
-var extendStatics = function(d, b) {
-    extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return extendStatics(d, b);
-};
-
-function __extends(d, b) {
-    extendStatics(d, b);
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
 
 var __assign = function() {
     __assign = Object.assign || function __assign(t) {
@@ -90,16 +76,6 @@ function getOffsetParent(element) {
 var DEFAULT_CONFIG = {
     placement: 'top',
 };
-
-var ILifecycle = /** @class */ (function () {
-    function ILifecycle() {
-        this.state = {
-            isCreated: false,
-            isDestroyed: false
-        };
-    }
-    return ILifecycle;
-}());
 
 /**
  * Get the size of the element and its position relative to the viewport
@@ -248,20 +224,21 @@ function getPopperOffsets(popper, referenceOffset, placement) {
  * 弹射器
  * 用于将给定的html内容显示到给定引用的四周
  */
-var Catapult = /** @class */ (function (_super) {
-    __extends(Catapult, _super);
+var Catapult = /** @class */ (function () {
     function Catapult(reference, popper, options) {
-        var _this = _super.call(this) || this;
-        _this._options = DEFAULT_CONFIG;
-        _this.data = {};
-        _this.reference = reference;
-        _this.popper = popper;
-        _this._options = __assign({}, _this._options, options);
+        this._options = DEFAULT_CONFIG;
+        this.data = {};
+        this.reference = reference;
+        this.popper = popper;
+        this._options = __assign({}, this._options, options);
+        this.state = {
+            isCreated: false,
+            isDestroyed: false
+        };
         // init task queue
-        _this.taskQueue = tasks;
-        _this._initialize();
-        _this._update();
-        return _this;
+        this.taskQueue = tasks;
+        this._initialize();
+        this._update();
     }
     /**
      * 初始化组件
@@ -301,21 +278,12 @@ var Catapult = /** @class */ (function (_super) {
         data = runTasks(this.taskQueue, data);
         // trigger life cycle events
         if (!this.state.isCreated) {
-            this.create();
+            this.state.isCreated = true;
             this._options.onCreate && this._options.onCreate(data);
         }
         else {
-            this.update();
             this._options.onUpdate && this._options.onUpdate(data);
         }
-    };
-    // === implement ILifecycle ===
-    Catapult.prototype.create = function () {
-        this.state.isCreated = true;
-        return this;
-    };
-    Catapult.prototype.update = function () {
-        return this;
     };
     Catapult.prototype.destroy = function () {
         var _a;
@@ -336,6 +304,6 @@ var Catapult = /** @class */ (function (_super) {
         return this;
     };
     return Catapult;
-}(ILifecycle));
+}());
 
 module.exports = Catapult;

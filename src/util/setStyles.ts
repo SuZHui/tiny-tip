@@ -1,4 +1,4 @@
-import { IStyle } from "@/interface/IStyle";
+import { IStyle } from "@/types/IStyle";
 
 export function setStyles(element: HTMLElement, styles: IStyle): void {
     Object.keys(styles).forEach((key: string) => {

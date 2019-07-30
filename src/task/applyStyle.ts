@@ -1,4 +1,3 @@
-import { ITinyTipEvent } from "@/interface/ITinyTipEvent";
 import { setStyles } from "@/util/setStyles";
 import { ICatapultData } from "@/types/ICataoultData";
 

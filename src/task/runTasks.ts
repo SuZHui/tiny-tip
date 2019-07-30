@@ -1,5 +1,6 @@
-import { ITask } from "@/interface/ITask";
+
 import { ICatapultData } from "@/types/ICataoultData";
+import { ITask } from "@/types/ITask";
 
 /**
  * Execution queue
