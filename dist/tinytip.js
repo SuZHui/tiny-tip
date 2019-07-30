@@ -143,19 +143,24 @@ var Tinytip = (function () {
         return data;
     }
 
+    function getRoundedOffsets(rect) {
+        var round = Math.round;
+        return {
+            width: round(rect.width),
+            height: round(rect.height),
+            top: round(rect.top),
+            bottom: round(rect.bottom),
+            left: round(rect.left),
+            right: round(rect.right)
+        };
+    }
+
     function computeStyle(data) {
         var popper = data.offsets.popper;
         var offsetParent = getOffsetParent(data.instance.popper);
         var offsetParentRect = getBoundingClientRect(offsetParent);
         var prefixedProperty = getSupportedPropertyName('transform');
-        var offsets = {
-            width: popper.width,
-            height: popper.height,
-            left: popper.left,
-            right: popper.right,
-            top: popper.top,
-            bottom: popper.bottom,
-        };
+        var offsets = getRoundedOffsets(popper);
         var styles = {
             position: data.instance.data.position,
         };

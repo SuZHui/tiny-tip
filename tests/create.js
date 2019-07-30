@@ -11,16 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // tinyTip && tinyTip.destroy();
         if (!tinyTip) {
             const constructor = window.Tinytip
-            // tinyTip = new constructor(hover, popper, {
-            //     title: 'Hi, I\'m Popper',
-            //     placement: 'top',
-            //     onCreate(e) {
-            //         console.log(e);
-            //     }
-            // });
             tinyTip = new constructor(hover, popper, {
                 placement: 'bottom',
-                onCreate: console.log 
+                onCreate: console.log
             });
         }
 

@@ -4,6 +4,7 @@ import { getOffsetParent } from '@/util/getOffsetParent';
 import { ICatapultData } from "@/types/ICataoultData";
 import { IRect } from '@/types/IRect';
 import { IStyle } from '@/types/IStyle';
+import { getRoundedOffsets } from '@/util/getRoundedOffsets';
 
 export function computeStyle(data: ICatapultData) {
     const { popper } = data.offsets;
@@ -12,14 +13,7 @@ export function computeStyle(data: ICatapultData) {
 
     const prefixedProperty = getSupportedPropertyName('transform');
 
-    const offsets: IRect = {
-        width: popper.width,
-        height: popper.height,
-        left: popper.left,
-        right: popper.right,
-        top: popper.top,
-        bottom: popper.bottom,
-    };
+    const offsets: IRect = getRoundedOffsets(popper);
 
     const styles: IStyle = {
         position: data.instance.data.position,
