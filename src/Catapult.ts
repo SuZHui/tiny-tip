@@ -24,7 +24,7 @@ export class Catapult {
     state: { isCreated: boolean; isDestroyed: boolean; };
     
 
-    constructor(reference: HTMLElement, popper: HTMLElement, options: ICatapultConfig) {
+    constructor(reference: HTMLElement, popper: HTMLElement, options: ICatapultConfig = DEFAULT_CONFIG) {
         this.reference = reference;
         this.popper = popper;
         this._options = { ...this._options, ...options };

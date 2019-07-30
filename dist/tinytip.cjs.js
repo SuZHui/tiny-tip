@@ -87,8 +87,10 @@ function getBoundingClientRect(element) {
     return {
         left: rect.left,
         top: rect.top,
-        width: rect.right - rect.left,
-        height: rect.bottom - rect.top
+        width: rect.width,
+        height: rect.height,
+        bottom: rect.bottom,
+        right: rect.width
     };
 }
 
@@ -107,9 +109,22 @@ function getStyleComputedProperty(element, property) {
  * 生成一个包含相对offset信息的对象
  */
 function getOffsetRectFromCtoP(child, parent) {
+    var isHTML = parent.nodeName === 'HTML';
     var childRect = getBoundingClientRect(child);
     var parentRect = getBoundingClientRect(parent);
     var styles = getStyleComputedProperty(parent);
+    if (isHTML) {
+        parentRect.top = Math.max(parentRect.top, 0);
+        parentRect.left = Math.max(parentRect.left, 0);
+        // TODO: 如果不是IE10
+        // offset加入计算margin和border
+        var marginTop = parseFloat(styles.marginTop);
+        var marginLeft = parseFloat(styles.marginLeft);
+        childRect.top += marginTop;
+        childRect.left += marginLeft;
+        childRect.bottom += marginTop;
+        childRect.right += marginLeft;
+    }
     return {
         width: childRect.width,
         height: childRect.height,
@@ -231,6 +246,7 @@ function getPopperOffsets(popper, referenceOffset, placement) {
  */
 var Catapult = /** @class */ (function () {
     function Catapult(reference, popper, options) {
+        if (options === void 0) { options = DEFAULT_CONFIG; }
         this._options = DEFAULT_CONFIG;
         this.data = {};
         this.reference = reference;

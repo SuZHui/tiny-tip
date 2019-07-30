@@ -12,8 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!tinyTip) {
             const constructor = window.Tinytip
             tinyTip = new constructor(hover, popper, {
-                placement: 'bottom',
+                placement: 'right',
                 onCreate: console.log
+            });
+
+            let tinyTip2 = new constructor(hover, popper2, {
+                placement: 'top'
             });
         }
 

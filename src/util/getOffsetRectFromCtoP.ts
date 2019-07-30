@@ -8,9 +8,25 @@ import { getStyleComputedProperty } from "./getStyleComputedProperty";
  */
 export function getOffsetRectFromCtoP(child: HTMLElement, parent: HTMLElement)
 : IRect {
+    const isHTML = parent.nodeName === 'HTML';
+
     const childRect = getBoundingClientRect(child);
     const parentRect = getBoundingClientRect(parent);
     const styles = getStyleComputedProperty(parent);
+
+    if (isHTML) {
+        parentRect.top = Math.max(parentRect.top, 0);
+        parentRect.left = Math.max(parentRect.left, 0);
+
+        // TODO: 如果不是IE10
+        // offset加入计算margin和border
+        const marginTop = parseFloat((<CSSStyleDeclaration>styles).marginTop!);
+        const marginLeft = parseFloat((<CSSStyleDeclaration>styles).marginLeft!);
+        childRect.top += marginTop;
+        childRect.left += marginLeft;
+        childRect.bottom += marginTop;
+        childRect.right += marginLeft;
+    }
 
     return {
         width: childRect.width,
