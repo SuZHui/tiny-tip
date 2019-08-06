@@ -1,6 +1,6 @@
-export function wrapperGenerate() {
+export function wrapperGenerate(id = '') {
     const wrapper = document.createElement('div');
-    wrapper.id = 'wrapper';
+    wrapper.id = id;
     wrapper.innerHTML = `
         <div class="container"></div>
         <br>

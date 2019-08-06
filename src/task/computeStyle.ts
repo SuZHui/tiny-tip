@@ -10,6 +10,9 @@ export function computeStyle(data: ICatapultData) {
     const { popper } = data.offsets;
     const offsetParent = getOffsetParent(data.instance.popper);
     const offsetParentRect = getBoundingClientRect(offsetParent);
+    // 计算位置时加入对滚动位置的计算
+    popper.left += -offsetParentRect.left;
+    popper.top += -offsetParentRect.top;
 
     const prefixedProperty = getSupportedPropertyName('transform');
 
