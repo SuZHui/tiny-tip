@@ -1,10 +1,10 @@
-import { getSupportedPropertyName } from '@/util/getSupportedPropertyName';
-import { setStyles } from '@/util/setStyles';
-import { getOffsetParent } from '@/util/getOffsetParent';
+import { getSupportedPropertyName } from './util/getSupportedPropertyName';
+import { setStyles } from './util/setStyles';
+import { getOffsetParent } from './util/getOffsetParent';
 import { DEFAULT_CONFIG } from "./config/defaultConfig";
 import { getOffsetRectFromCtoP } from './util/getOffsetRectFromCtoP';
 import { runTasks } from './task/runTasks';
-import tasks from '@/task/index';
+import tasks from './task/index';
 import { ICatapultData } from './types/ICataoultData';
 import { ICatapultConfig } from './types/ICatapultConfig';
 import { getPopperOffsets } from './util/getPopperOffsets';

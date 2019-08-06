@@ -1,5 +1,5 @@
-import { setStyles } from "@/util/setStyles";
-import { ICatapultData } from "@/types/ICataoultData";
+import { setStyles } from "../util/setStyles";
+import { ICatapultData } from "../types/ICataoultData";
 
 /**
  * Apply style to popper

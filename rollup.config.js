@@ -12,6 +12,11 @@ export default {
             file: 'dist/tinytip.js',
             format: 'iife',
             name: 'Tinytip'
+        },
+        // esmodule
+        {
+            file: 'dist/tinytip.esm.js',
+            format: 'esm'
         }
     ],
     plugins: [

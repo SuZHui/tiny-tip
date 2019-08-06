@@ -1,10 +1,10 @@
-import { getSupportedPropertyName } from '@/util/getSupportedPropertyName';
-import { getBoundingClientRect } from '@/util/getBoundingClientRect';
-import { getOffsetParent } from '@/util/getOffsetParent';
-import { ICatapultData } from "@/types/ICataoultData";
-import { IRect } from '@/types/IRect';
-import { IStyle } from '@/types/IStyle';
-import { getRoundedOffsets } from '@/util/getRoundedOffsets';
+import { getSupportedPropertyName } from '../util/getSupportedPropertyName';
+import { getBoundingClientRect } from '../util/getBoundingClientRect';
+import { getOffsetParent } from '../util/getOffsetParent';
+import { ICatapultData } from "../types/ICataoultData";
+import { IRect } from '../types/IRect';
+import { IStyle } from '../types/IStyle';
+import { getRoundedOffsets } from '../util/getRoundedOffsets';
 
 export function computeStyle(data: ICatapultData) {
     const { popper } = data.offsets;
